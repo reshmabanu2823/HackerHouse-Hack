@@ -30,37 +30,56 @@
   --sys-indigo: #5e5ce6;
   --sys-teal: #64d2ff;
 
-  /* Apple Semantic Text Tiers */
-  --text-primary: #f5f5f7;
-  --text-secondary: #a1a1a6;
-  --text-tertiary: #6e6e73;
-  --text-quaternary: #48484a;
+  --sb-red: #ef4444;
+  --sb-red-subtle: rgba(239, 68, 68, 0.12);
+  --sb-red-border: rgba(239, 68, 68, 0.35);
 
-  /* Separators and Borders */
+  --sb-amber: #f59e0b;
+  --sb-amber-subtle: rgba(245, 158, 11, 0.12);
+  --sb-amber-border: rgba(245, 158, 11, 0.35);
+
+  --sb-blue: #3b82f6;
+  --sb-blue-subtle: rgba(59, 130, 246, 0.12);
+  --sb-blue-border: rgba(59, 130, 246, 0.35);
+
+  --sb-purple: #a855f7;
+  --sb-purple-subtle: rgba(168, 85, 247, 0.12);
+  --sb-purple-border: rgba(168, 85, 247, 0.35);
+
+  /* Typography Tiers */
+  --text-primary: #ededed;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+  --text-quaternary: #3f3f46;
+
+  /* Hairline Borders & Shadows */
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-hover: rgba(255, 255, 255, 0.18);
   --border-focus: rgba(10, 132, 255, 0.6);
   --glass-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
 
-  /* Radii & Typography */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  /* Geometry & Physics */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
   --radius-pill: 9999px;
-  --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", Roboto, sans-serif;
   --font-mono: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, monospace;
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-fluid: cubic-bezier(0.34, 1.56, 0.64, 1.0);
 }
 
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{
-  height:100%;
-  background:var(--bg-system);
-  color:var(--text-primary);
-  font:13.5px/1.45 var(--font-system);
-  letter-spacing:-0.01em;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  overflow:hidden;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg-system);
+  color: var(--text-primary);
+  font: 13px/1.45 var(--font-system);
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 
 /* Ambient Canvas Layer */
@@ -655,17 +674,24 @@ main{
   border:1px solid rgba(255,255,255,0.25);
   white-space:nowrap;
 }
-.gauge-ticks{
-  position:relative;
-  height:16px;
-  margin-top:6px;
+
+/* Sidebar Navigation */
+aside {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-sidebar);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border-right: 1px solid var(--border-subtle);
+  overflow: hidden;
 }
-.gauge-ticks .tk{
-  position:absolute;
-  font-size:10px;
-  font-family:var(--font-mono);
-  color:var(--text-tertiary);
-  transform:translateX(-50%);
+
+.sidebar-top {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .gauge-labels{
   display:flex;
@@ -847,54 +873,11 @@ main{
 }
 
 /* Timeline & Steps */
-.tl{
-  position:relative;
-  margin-left:6px;
-  padding-left:14px;
-  border-left:1.5px solid var(--border-subtle);
-}
-.st{
-  position:relative;
-  padding:0 0 16px 20px;
-  animation:stepIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-@keyframes stepIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.st .n{
-  position:absolute;
-  left:-21.5px;
-  top:1px;
-  width:16px;
-  height:16px;
-  border-radius:50%;
-  background:var(--bg-system);
-  border:2px solid var(--sys-blue);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:9.5px;
-  font-weight:700;
-  color:var(--sys-blue);
-}
-.st.evidence .n{border-color:var(--sys-purple);color:var(--sys-purple)}
-.st.recommend .n{border-color:var(--sys-green);color:var(--sys-green)}
-.st.stop .n{border-color:var(--sys-red);color:var(--sys-red)}
-.st.memory .n,.st.memory_write .n{border-color:var(--sys-teal);color:var(--sys-teal)}
-.st b{
-  display:block;
-  font-size:13px;
-  font-weight:600;
-  color:var(--text-primary);
-}
-.st p{
-  margin:3px 0 0;
-  color:var(--text-secondary);
-  font-size:12px;
-  line-height:1.45;
-}
-.st .tm{
-  float:right;
-  color:var(--text-tertiary);
-  font:11px var(--font-mono);
+.timeline {
+  position: relative;
+  margin-left: 6px;
+  padding-left: 12px;
+  border-left: 1.5px solid var(--border-subtle);
 }
 
 /* SAR Report Presentation */
@@ -952,8 +935,6 @@ pre.sar{
   border-bottom:1px solid var(--border-subtle);
   font-size:12px;
 }
-.mem:last-child{border:0}
-.mem .cid{font:600 12px var(--font-mono);color:var(--sys-blue)}
 
 /* Subgraph Interactive Topology Canvas */
 .graph-interactive-container{
@@ -1039,24 +1020,50 @@ pre.sar{
 }
 
 /* Activity Spinner */
-.spin{
-  display:inline-block;
-  width:13px;
-  height:13px;
-  border:2px solid rgba(255, 255, 255, 0.25);
-  border-top-color:#ffffff;
-  border-radius:50%;
-  animation:sp 0.65s linear infinite;
-  vertical-align:-2px;
-  margin-right:6px;
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(18, 18, 18, 0.3);
+  border-top-color: #121212;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  vertical-align: -1px;
 }
-@keyframes sp{to{transform:rotate(360deg)}}
 
-/* Custom Apple HIG Scrollbars */
-::-webkit-scrollbar{width:7px;height:7px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(255, 255, 255, 0.12);border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:rgba(255, 255, 255, 0.25)}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Toast Notification */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: rgba(24, 24, 27, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-hover);
+  color: var(--text-primary);
+  font: 500 12px var(--font-system);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-glass);
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.2s var(--ease-spring), transform 0.2s var(--ease-spring);
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
 </style>
 </head>
 <body>
@@ -1120,6 +1127,8 @@ pre.sar{
     </div>
   </main>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 const $ = s => document.querySelector(s);
@@ -1478,16 +1487,24 @@ function renderDetailSkeleton(){
     </div>`;
 }
 
-function setFilter(filter){
+function updateFilterCounts() {
+  $("#count-all").textContent = CASES.length;
+  $("#count-fraud").textContent = CASES.filter(c => c.verdict === "fraud").length;
+  $("#count-uncertain").textContent = CASES.filter(c => c.verdict === "uncertain" || !c.verdict).length;
+  $("#count-legit").textContent = CASES.filter(c => c.verdict === "legitimate").length;
+}
+
+function setFilter(filter) {
   CURRENT_FILTER = filter;
-  document.querySelectorAll(".filter-btn").forEach(b => {
+  document.querySelectorAll(".segment-btn").forEach(b => {
     b.classList.toggle("active", b.dataset.filter === filter);
   });
   renderList();
 }
 
-function filterCases(){
+function handleSearch() {
   SEARCH_QUERY = ($("#search").value || "").trim().toLowerCase();
+  $("#search-clear").style.display = SEARCH_QUERY ? "flex" : "none";
   renderList();
 }
 
@@ -1591,17 +1608,19 @@ document.addEventListener("keydown", e => {
   }
 });
 
-function header(meta, a){
+function header(meta, a) {
   const c = a && a.case;
   return `
-    <div class="case-top">
-      <div class="case-title-area">
-        <div class="case-heading">
-          <span class="cid-label">${meta.case_id}</span>
+    <div class="case-top-bar">
+      <div class="case-info">
+        <div class="case-title-row">
+          <span class="case-cid">${meta.case_id}</span>
           ${c ? `
-            <span class="chip ${c.verdict}">${c.verdict}</span>
-            <span class="chip">${pretty(c.status)}</span>
-            <span class="chip">${pretty(c.pattern)}</span>
+            <div class="case-chips">
+              <span class="chip ${c.verdict}">${c.verdict}</span>
+              <span class="chip">${pretty(c.status)}</span>
+              ${c.pattern && c.pattern !== "none" ? `<span class="chip">${pretty(c.pattern)}</span>` : ""}
+            </div>
           ` : ""}
         </div>
         <div class="trigger-desc">${esc(meta.trigger_text || (c && c.summary) || "Alert flagged for investigation")}</div>
@@ -1787,13 +1806,13 @@ function renderEvidenceCards(evList){
   }).join("");
 }
 
-function timeline(tr){
+function timeline(tr) {
   return tr.map(s => `
-    <div class="st ${s.kind}">
-      <span class="n">${s.step}</span>
-      <span class="tm">${s.t}s</span>
-      <b>${esc(s.title)}</b>
-      <p>${esc(s.detail)}</p>
+    <div class="timeline-step ${s.kind}">
+      <span class="step-badge">${s.step}</span>
+      <span class="step-time">${s.t}s</span>
+      <span class="step-title">${esc(s.title)}</span>
+      <p class="step-detail">${esc(s.detail)}</p>
     </div>`).join("");
 }
 
@@ -1801,8 +1820,7 @@ function copySar(){
   const text = document.querySelector("#sar-text")?.innerText;
   if (!text) return;
   navigator.clipboard.writeText(text).then(() => {
-    const b = document.querySelector("#sar-copy-btn");
-    if (b) { b.textContent = "Copied!"; setTimeout(() => b.textContent = "Copy Narrative", 1800); }
+    showToast("SAR narrative copied to clipboard");
   });
 }
 
@@ -2185,9 +2203,9 @@ function view(meta, a){
         <label>Fraud Probability</label>
         <b style="color:${prob >= 0.85 ? "var(--sys-red)" : prob <= 0.15 ? "var(--sys-green)" : "var(--sys-orange)"}">${prob.toFixed(2)}</b>
       </div>
-      <div class="kpi">
-        <label>Exposure</label>
-        <b>${money(c.exposure_usd)}</b>
+      <div class="kpi-card">
+        <span class="kpi-label">Financial Exposure</span>
+        <div class="kpi-val">${money(c.exposure_usd)}</div>
       </div>
       <div class="kpi">
         <label>Affected Txns</label>
@@ -2229,7 +2247,7 @@ function view(meta, a){
           ${a.sar && a.sar.file ? `
             <div class="sar-box">
               <button class="sar-copy-btn" id="sar-copy-btn" onclick="copySar()">Copy Narrative</button>
-              <pre class="sar" id="sar-text">${esc(a.sar.narrative)}</pre>
+              <pre class="sar-text" id="sar-text">${esc(a.sar.narrative)}</pre>
             </div>
             <p style="color:var(--text-tertiary);font-size:11px;margin-top:8px">Subjects: ${(a.sar.subjects || []).map(esc).join(", ")} · Total: ${money(a.sar.total_amount_usd)} · Span: ${(a.sar.activity_dates || []).join(" → ")}</p>`
             : `
@@ -2307,31 +2325,37 @@ function view(meta, a){
 async function run(meta){
   const b = $("#run");
   b.disabled = true;
-  b.innerHTML = '<span class="spin"></span>Investigating…';
-  $("#main").querySelectorAll(".detail-grid, .kpis").forEach(e => e.remove());
+  b.innerHTML = '<span class="spinner"></span> Investigating&hellip;';
+  $("#main").querySelectorAll(".detail-grid, .kpi-row").forEach(e => e.remove());
   let tl = $("#tl");
   if (!tl){
     $("#detail-pane").insertAdjacentHTML("beforeend", `
       <div class="card">
-        <h2>Live Streamed Trace <em id="live">Streaming…</em></h2>
-        <div class="tl" id="tl"></div>
+        <div class="card-header">
+          <span class="card-title">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Investigation Trace
+          </span>
+          <span class="card-subtitle" id="live">Streaming&hellip;</span>
+        </div>
+        <div class="timeline" id="tl"></div>
       </div>`);
     tl = $("#tl");
   }
   tl.innerHTML = "";
-  $("#live").textContent = "Streaming live from TigerGraph…";
+  $("#live").textContent = "Streaming live from TigerGraph&hellip;";
 
   try{
     const res = await fetch("/api/investigate/" + meta.case_id, {method: "POST"});
     if (!res.ok) throw new Error(`Investigation endpoint returned HTTP ${res.status}`);
     const rd = res.body.getReader(), dec = new TextDecoder();
     let buf = "";
-    while(true){
-      const {value, done} = await rd.read();
+    while (true) {
+      const { value, done } = await rd.read();
       if (done) break;
-      buf += dec.decode(value, {stream: true});
+      buf += dec.decode(value, { stream: true });
       let i;
-      while((i = buf.indexOf("\n\n")) >= 0){
+      while ((i = buf.indexOf("\n\n")) >= 0) {
         const blk = buf.slice(0, i);
         buf = buf.slice(i + 2);
         const ev = /event: (\w+)/.exec(blk)?.[1];
@@ -2339,35 +2363,75 @@ async function run(meta){
         if (!dataMatch) continue;
         const data = JSON.parse(dataMatch[1]);
         if (ev === "step") tl.insertAdjacentHTML("beforeend", timeline([data]));
-        if (ev === "done"){
+        if (ev === "done") {
           CASES = await (await fetch("/api/cases")).json();
           updateFilterCounts();
           renderList();
           view(CASES.find(c => c.case_id === meta.case_id), data);
+          showToast("Investigation complete");
         }
-        if (ev === "error"){
+        if (ev === "error") {
           tl.insertAdjacentHTML("beforeend", `
-            <div class="st stop">
-              <span class="n">!</span>
-              <b>Investigation Error</b>
-              <p>${esc(data.error)}</p>
+            <div class="timeline-step stop">
+              <span class="step-badge">!</span>
+              <span class="step-title">Investigation Error</span>
+              <p class="step-detail">${esc(data.error)}</p>
             </div>`);
           b.disabled = false;
           b.innerHTML = 'Retry Investigation';
         }
       }
     }
-  }catch(err){
+  } catch (err) {
     tl.insertAdjacentHTML("beforeend", `
-      <div class="st stop">
-        <span class="n">!</span>
-        <b>Connection Error</b>
-        <p>${esc(err.message)}</p>
+      <div class="timeline-step stop">
+        <span class="step-badge">!</span>
+        <span class="step-title">Connection Error</span>
+        <p class="step-detail">${esc(err.message)}</p>
       </div>`);
     b.disabled = false;
     b.innerHTML = 'Retry Investigation';
   }
 }
+
+// Keyboard shortcuts for investigator workflow
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
+    if (e.key === "Escape") {
+      e.target.blur();
+    }
+    return;
+  }
+
+  if (e.key === "/" || ((e.metaKey || e.ctrlKey) && e.key === "k")) {
+    e.preventDefault();
+    $("#search").focus();
+    $("#search").select();
+    return;
+  }
+
+  const filtered = getFilteredCases();
+  if (!filtered.length) return;
+
+  const curIdx = filtered.findIndex(c => c.case_id === CUR);
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    const nextIdx = curIdx < filtered.length - 1 ? curIdx + 1 : 0;
+    openCase(filtered[nextIdx].case_id);
+    const el = $(`[data-id="${filtered[nextIdx].case_id}"]`);
+    if (el) el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    const prevIdx = curIdx > 0 ? curIdx - 1 : filtered.length - 1;
+    openCase(filtered[prevIdx].case_id);
+    const el = $(`[data-id="${filtered[prevIdx].case_id}"]`);
+    if (el) el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  } else if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+    const runBtn = $("#run");
+    if (runBtn && !runBtn.disabled) runBtn.click();
+  }
+});
 
 boot();
 </script>
