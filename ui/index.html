@@ -89,9 +89,9 @@ html, body {
   left:0;
   width:100vw;
   height:100vh;
-  z-index:0;
+  z-index:9999;
   pointer-events:none;
-  opacity:0.85;
+  opacity:1;
 }
 
 /* App Frame Layout */
@@ -1166,19 +1166,19 @@ function initAmbientBackground(){
   let particles = [];
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  let mouse = { x: -1000, y: -1000, targetX: -1000, targetY: -1000, active: false };
-  const MOUSE_RADIUS = 200;
-  const NODE_LINK_DIST = 140;
+  let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2, targetX: window.innerWidth / 2, targetY: window.innerHeight / 2, active: true };
+  const MOUSE_RADIUS = 230;
+  const NODE_LINK_DIST = 150;
 
   function createParticle(){
     return {
       x: Math.random() * (width || window.innerWidth),
       y: Math.random() * (height || window.innerHeight),
-      vx: (Math.random() - 0.5) * 0.45,
-      vy: (Math.random() - 0.5) * 0.45,
-      r: Math.random() * 1.5 + 1.2,
-      baseAlpha: Math.random() * 0.35 + 0.35,
-      pulseSpeed: Math.random() * 0.02 + 0.015,
+      vx: (Math.random() - 0.5) * 0.55,
+      vy: (Math.random() - 0.5) * 0.55,
+      r: Math.random() * 1.8 + 1.4,
+      baseAlpha: Math.random() * 0.35 + 0.45,
+      pulseSpeed: Math.random() * 0.025 + 0.015,
       phase: Math.random() * Math.PI * 2
     };
   }
@@ -1192,7 +1192,7 @@ function initAmbientBackground(){
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
 
-    const targetCount = Math.min(90, Math.max(45, Math.floor((width * height) / 15000)));
+    const targetCount = Math.min(110, Math.max(55, Math.floor((width * height) / 14000)));
     if (particles.length === 0){
       for (let i = 0; i < targetCount; i++){
         particles.push(createParticle());
@@ -1207,46 +1207,34 @@ function initAmbientBackground(){
   resize();
   window.addEventListener("resize", resize);
 
-  const onPointerMove = (e) => {
-    mouse.targetX = e.clientX;
-    mouse.targetY = e.clientY;
-    mouse.active = true;
+  const updateMouse = (clientX, clientY) => {
+    if (clientX != null && clientY != null){
+      mouse.targetX = clientX;
+      mouse.targetY = clientY;
+      mouse.active = true;
+    }
   };
 
-  const onPointerLeave = () => {
-    mouse.active = false;
-    mouse.targetX = -1000;
-    mouse.targetY = -1000;
-  };
+  window.addEventListener("pointermove", (e) => updateMouse(e.clientX, e.clientY), { passive: true });
+  window.addEventListener("mousemove", (e) => updateMouse(e.clientX, e.clientY), { passive: true });
+  document.addEventListener("pointermove", (e) => updateMouse(e.clientX, e.clientY), { passive: true });
+  document.addEventListener("mousemove", (e) => updateMouse(e.clientX, e.clientY), { passive: true });
 
-  window.addEventListener("pointermove", onPointerMove);
-  window.addEventListener("pointerleave", onPointerLeave);
   window.addEventListener("touchstart", (e) => {
-    if (e.touches && e.touches[0]){
-      mouse.targetX = e.touches[0].clientX;
-      mouse.targetY = e.touches[0].clientY;
-      mouse.active = true;
-    }
-  }, {passive: true});
+    if (e.touches && e.touches[0]) updateMouse(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
   window.addEventListener("touchmove", (e) => {
-    if (e.touches && e.touches[0]){
-      mouse.targetX = e.touches[0].clientX;
-      mouse.targetY = e.touches[0].clientY;
-      mouse.active = true;
-    }
-  }, {passive: true});
-  window.addEventListener("touchend", () => {
-    mouse.active = false;
-  }, {passive: true});
+    if (e.touches && e.touches[0]) updateMouse(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
 
   if (prefersReducedMotion){
-    // Static red spider web for reduced motion accessibility
+    // Static red spider web for accessibility
     ctx.clearRect(0, 0, width, height);
     for (let i = 0; i < particles.length; i++){
       const p = particles[i];
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255, 69, 58, 0.4)";
+      ctx.fillStyle = "rgba(255, 59, 48, 0.6)";
       ctx.fill();
     }
     return;
@@ -1257,18 +1245,18 @@ function initAmbientBackground(){
     ctx.clearRect(0, 0, width, height);
     frameCount++;
 
-    // Smooth mouse follow
-    mouse.x += (mouse.targetX - mouse.x) * 0.18;
-    mouse.y += (mouse.targetY - mouse.y) * 0.18;
+    // Smooth elastic mouse follow
+    mouse.x += (mouse.targetX - mouse.x) * 0.22;
+    mouse.y += (mouse.targetY - mouse.y) * 0.22;
 
     const mouseConnected = [];
 
-    // 1. Update nodes & apply elastic spider web mouse tension
+    // 1. Update web node positions & apply live mouse elastic pull
     for (let i = 0; i < particles.length; i++){
       const p = particles[i];
       p.phase += p.pulseSpeed;
 
-      // Natural drifting
+      // Natural continuous drifting
       p.x += p.vx;
       p.y += p.vy;
 
@@ -1279,7 +1267,7 @@ function initAmbientBackground(){
       if (p.y < 10) { p.y = 10; p.vy = Math.abs(p.vy); }
       else if (p.y > height - 10) { p.y = height - 10; p.vy = -Math.abs(p.vy); }
 
-      // Mouse interactive spider web tension & pull
+      // Mouse interactive spider web elastic pull (moves the web with the cursor)
       if (mouse.active && mouse.x > 0 && mouse.y > 0){
         const dx = mouse.x - p.x;
         const dy = mouse.y - p.y;
@@ -1287,10 +1275,10 @@ function initAmbientBackground(){
 
         if (dist < MOUSE_RADIUS && dist > 1){
           const ratio = 1 - dist / MOUSE_RADIUS;
-          // Elastic pull towards mouse pointer (web stickiness)
-          const pullForce = ratio * ratio * 0.42;
-          p.x += (dx / dist) * pullForce * 4.5;
-          p.y += (dy / dist) * pullForce * 4.5;
+          // Spring pull towards mouse pointer (web elasticity)
+          const pullForce = ratio * ratio * 0.48;
+          p.x += (dx / dist) * pullForce * 5.5;
+          p.y += (dy / dist) * pullForce * 5.5;
           mouseConnected.push({ node: p, dist, ratio });
         }
       }
@@ -1307,29 +1295,29 @@ function initAmbientBackground(){
 
         if (dist < NODE_LINK_DIST){
           const baseRatio = 1 - dist / NODE_LINK_DIST;
-          let alpha = baseRatio * 0.22;
+          let alpha = baseRatio * 0.35;
 
-          // Extra brightening if near active mouse cursor
+          // Brighten when near mouse pointer
           if (mouse.active){
             const midX = (p1.x + p2.x) * 0.5;
             const midY = (p1.y + p2.y) * 0.5;
             const mDist = Math.hypot(midX - mouse.x, midY - mouse.y);
             if (mDist < MOUSE_RADIUS){
-              alpha += (1 - mDist / MOUSE_RADIUS) * 0.38;
+              alpha += (1 - mDist / MOUSE_RADIUS) * 0.55;
             }
           }
 
           ctx.beginPath();
           ctx.moveTo(p1.x, p1.y);
           ctx.lineTo(p2.x, p2.y);
-          ctx.strokeStyle = `rgba(255, 69, 58, ${alpha})`;
-          ctx.lineWidth = 0.6 + baseRatio * 0.6;
+          ctx.strokeStyle = `rgba(255, 59, 48, ${Math.min(0.95, alpha)})`;
+          ctx.lineWidth = 0.75 + baseRatio * 0.85;
           ctx.stroke();
         }
       }
     }
 
-    // 3. Draw active red spider web threads to the mouse pointer
+    // 3. Draw active live red spider web threads connecting to the mouse pointer
     if (mouse.active && mouseConnected.length > 0){
       for (let k = 0; k < mouseConnected.length; k++){
         const { node: p, ratio } = mouseConnected[k];
@@ -1338,9 +1326,9 @@ function initAmbientBackground(){
         ctx.moveTo(mouse.x, mouse.y);
         ctx.lineTo(p.x, p.y);
         
-        const strokeAlpha = Math.min(0.9, 0.22 + ratio * 0.68);
-        ctx.strokeStyle = `rgba(255, 69, 58, ${strokeAlpha})`;
-        ctx.lineWidth = 0.8 + ratio * 1.5;
+        const strokeAlpha = Math.min(1, 0.35 + ratio * 0.65);
+        ctx.strokeStyle = `rgba(255, 50, 65, ${strokeAlpha})`;
+        ctx.lineWidth = 1.0 + ratio * 1.8;
         ctx.stroke();
       }
 
@@ -1350,55 +1338,67 @@ function initAmbientBackground(){
           const pA = mouseConnected[a].node;
           const pB = mouseConnected[b].node;
           const dAB = Math.hypot(pA.x - pB.x, pA.y - pB.y);
-          if (dAB < 130){
+          if (dAB < 140){
             const midX = (pA.x + pB.x) * 0.5;
             const midY = (pA.y + pB.y) * 0.5;
-            // Bend the web curve slightly towards the mouse center for authentic spider web geometry
-            const bendX = midX + (mouse.x - midX) * 0.22;
-            const bendY = midY + (mouse.y - midY) * 0.22;
-            const arcRatio = 1 - dAB / 130;
+            // Bend the web curve slightly towards the mouse center for organic radial spider web shape
+            const bendX = midX + (mouse.x - midX) * 0.25;
+            const bendY = midY + (mouse.y - midY) * 0.25;
+            const arcRatio = 1 - dAB / 140;
 
             ctx.beginPath();
             ctx.moveTo(pA.x, pA.y);
             ctx.quadraticCurveTo(bendX, bendY, pB.x, pB.y);
-            ctx.strokeStyle = `rgba(255, 80, 80, ${arcRatio * 0.45})`;
-            ctx.lineWidth = 0.5 + arcRatio * 0.7;
+            ctx.strokeStyle = `rgba(255, 75, 85, ${Math.min(0.9, arcRatio * 0.65)})`;
+            ctx.lineWidth = 0.75 + arcRatio * 0.95;
             ctx.stroke();
           }
         }
       }
 
-      // Glowing red spider web epicenter / pulse at the mouse pointer
-      const pulse = Math.sin(frameCount * 0.1) * 2;
+      // 5. Glowing red spider web epicenter / pulse at the mouse pointer
+      const pulse = Math.sin(frameCount * 0.12) * 2.5;
       ctx.beginPath();
-      ctx.arc(mouse.x, mouse.y, 4 + pulse, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255, 69, 58, 0.65)";
+      ctx.arc(mouse.x, mouse.y, 4.5 + Math.abs(pulse * 0.5), 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255, 50, 65, 0.9)";
+      ctx.shadowColor = "#ff3b30";
+      ctx.shadowBlur = 10;
       ctx.fill();
+      ctx.shadowBlur = 0;
 
-      // Concentric red spider web ring around mouse
+      // Concentric spider web radial rings around mouse cursor
       ctx.beginPath();
-      ctx.arc(mouse.x, mouse.y, 22 + pulse * 1.5, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(255, 69, 58, 0.25)";
-      ctx.lineWidth = 0.75;
+      ctx.arc(mouse.x, mouse.y, 24 + pulse * 1.5, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(255, 60, 75, 0.4)";
+      ctx.lineWidth = 0.9;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(mouse.x, mouse.y, 48 + pulse * 2, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(255, 60, 75, 0.22)";
+      ctx.lineWidth = 0.7;
       ctx.stroke();
     }
 
-    // 5. Draw glowing red spider web junction nodes
+    // 6. Draw glowing red spider web junction nodes
     for (let i = 0; i < particles.length; i++){
       const p = particles[i];
       const glow = (Math.sin(p.phase) + 1) * 0.5;
-      const alpha = Math.min(0.95, p.baseAlpha + glow * 0.3);
+      const alpha = Math.min(1, p.baseAlpha + glow * 0.35);
 
-      // Node red center
+      // Node glowing red center
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 69, 58, ${alpha})`;
+      ctx.fillStyle = `rgba(255, 50, 65, ${alpha})`;
+      ctx.shadowColor = "#ff3b30";
+      ctx.shadowBlur = 6;
       ctx.fill();
+      ctx.shadowBlur = 0;
 
       // Subtle outer red halo
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r + 2.5, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 69, 58, ${alpha * 0.28})`;
+      ctx.arc(p.x, p.y, p.r + 3, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 60, 75, ${alpha * 0.35})`;
       ctx.fill();
     }
 
