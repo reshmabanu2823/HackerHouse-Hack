@@ -26,6 +26,8 @@ _STOP = object()
 
 class MCPGraphClient(GraphClient):
     def __init__(self, host="http://127.0.0.1", rest=9000, gs=14240, user="tigergraph", pw="tigergraph", graphname="FraudGraph"):
+        from mcp import ClientSession, StdioServerParameters
+        from mcp.client.stdio import get_default_environment, stdio_client
         self.calls = 0
         self.log: list[str] = []
         self._cache: dict = {}

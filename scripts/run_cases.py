@@ -1,14 +1,24 @@
-"""Run the agent on the 20 exam cases; writes cases/<case_id>.json (+ traces for the UI)."""
 import sys, json, time, pandas as pd, pathlib
-sys.path.insert(0, "/home/vinay/hackerhouse")
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from agent.data_access import make_graph_client
 from agent.investigator import Investigator
 
-OUT = pathlib.Path("/home/vinay/hackerhouse/cases"); OUT.mkdir(exist_ok=True)
-TR = pathlib.Path("/home/vinay/hackerhouse/data/traces"); TR.mkdir(exist_ok=True, parents=True)
+OUT = ROOT / "cases"
+OUT.mkdir(exist_ok=True)
+TR = ROOT / "data/traces"
+TR.mkdir(exist_ok=True, parents=True)
 only = set(sys.argv[1:])
 g = make_graph_client(); inv = Investigator(g)
-cp = pd.read_csv("/home/vinay/hackerhouse/data/HHGOA_IEEE/case_pack.csv")
+cp_file = ROOT / "data/HHGOA_IEEE/case_pack.csv"
+if cp_file.exists():
+    cp = pd.read_csv(cp_file)
+else:
+    from api.app import PACK
+    cp = pd.DataFrame(PACK)
 rows = []
 for r in cp.to_dict("records"):
     if only and r["case_id"] not in only: continue

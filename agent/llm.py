@@ -1,9 +1,11 @@
 """LLM + embedding access through OmniRoute (OpenAI-compatible), with Ollama Cloud as fallback."""
 from __future__ import annotations
-import os, json, time, httpx
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv("/home/vinay/hackerhouse/.env")
+ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(ROOT / ".env")
+load_dotenv()
 OMNI = os.environ.get("OMNIROUTE_BASE_URL", "http://127.0.0.1:20128").rstrip("/")
 OMNI_KEY = os.environ.get("OMNIROUTE_API_KEY", "")
 OLLAMA = os.environ.get("OLLAMA_BASE_URL", "https://ollama.com/v1").rstrip("/")

@@ -1,0 +1,9 @@
+fastapi>=0.110.0
+uvicorn>=0.28.0
+pandas>=2.0.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+joblib>=1.3.0
+httpx>=0.27.0
+python-dotenv>=1.0.0
+pyTigerGraph>=1.5.0
